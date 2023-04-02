@@ -1,6 +1,6 @@
 import re
 
-from classes import AddressBook, Record, Name
+from classes import AddressBook, Record, Name, Phone
 
 users = AddressBook()
 
@@ -30,10 +30,10 @@ def cmd_add_func(name, *phones):
     if name in users and not phones:
             return f"The name {name} is already registred in the Address Book."
     user = Record(Name(name))
-    if name not in users:
-        user.phone_list = []
-    else:
+    if name in users:
         user.phone_list = users.get(name)
+    else:
+        user.phone_list = []
     new_phones_list = []
     p = ""
     rp = ""
@@ -46,7 +46,7 @@ def cmd_add_func(name, *phones):
             elif phone in user.phone_list and len(phones) > 1:
                 rp += f"\nThe phone number {phone} is already registred in the Address Book." 
             else:
-                user.add_phone(phone)
+                user.add_phone(Phone(phone))
                 new_phones_list.append(phone)
     users.add_record(user)
     p = ", ".join(new_phones_list)
@@ -62,11 +62,13 @@ def cmd_change_phone_func(name, phone, new_phone):
     if name not in users:
         return f"User {name} is not in the Address Book."
     else:
-        user = Record(Name(name), phone)
+        user = Record(Name(name))
         user.phone_list = users.get(name)
         if name in users and new_phone in user.phone_list:
             return f"The phone number {phone} is already registred in the Address Book."    
-        user.change_phone(phone, new_phone)  
+        if phone not in user.phone_list:
+            return(f"The phone number {phone} is not in the list")   
+        user.change_phone(Phone(phone), Phone(new_phone)) 
         return f"The phone number {phone} for {name} has been changed for {new_phone}."
 
 
@@ -82,9 +84,10 @@ def cmd_delete_phone_func(name, phone):
         return f"No user {name} in the Address Book."
     if phone not in user.phone_list:
         return f"The phone number {phone} is not in the Address Book."
-    user.delete_phone(phone)
+    if phone not in user.phone_list:
+        return(f"The phone number {phone} is not in the list")
+    user.delete_phone(Phone(phone))
     return f"The phone number {phone} for {name} has been deleted."
-
 
 
 @input_error
@@ -106,8 +109,8 @@ def cmd_show_all_func(*_):
     if len(users) == 0:
         return "No items in the Address Book"
     else:
-        for name, phone in users.items():
-            all += name + ": " + ", ".join(phone) + "\n"
+        for name, phones in users.items():
+            all += name + ": " + ", ".join(phones) + "\n"
         return all + "All users are displayed"
 
  

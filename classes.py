@@ -20,26 +20,24 @@ class Phone(Field):
 
 
 class Record:
-    def __init__(self, name:Name, *phone:Phone) -> None:
+    def __init__(self, name:Name, phone:Phone=None) -> None:
         self.name = name
         self.phone = phone
 
     phone_list = []
 
-    def add_phone(self, phone):
+    def add_phone(self, phone:Phone):
         if phone:
-            self.phone_list.append(phone)
+            self.phone_list.append(phone.value)
 
-    def change_phone(self, phone, new_phone):
-        if phone in self.phone_list:
-            ind = self.phone_list.index(phone)
-            self.phone_list[ind] = new_phone
-        else:
-            raise ValueError(f"The phone number {phone} is not in the list")
+    def change_phone(self, phone:Phone, new_phone:Phone):
+        ind = self.phone_list.index(phone.value)
+        self.phone_list[ind] = new_phone.value
 
-    def delete_phone(self, phone):
-        if phone in self.phone_list:
-            self.phone_list.remove(phone)
+
+    def delete_phone(self, phone:Phone):
+        if phone.value in self.phone_list:
+            self.phone_list.remove(phone.value)
 
 
 class AddressBook(UserDict):
